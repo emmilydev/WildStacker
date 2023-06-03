@@ -3,7 +3,9 @@ package com.bgsoftware.wildstacker.listeners;
 import com.bgsoftware.wildstacker.Locale;
 import com.bgsoftware.wildstacker.WildStackerPlugin;
 import com.bgsoftware.wildstacker.api.enums.UnstackResult;
+import com.bgsoftware.wildstacker.api.handlers.SystemManager;
 import com.bgsoftware.wildstacker.api.objects.StackedBarrel;
+import com.bgsoftware.wildstacker.api.objects.visitor.StackedObjectVisitor;
 import com.bgsoftware.wildstacker.hooks.listeners.IStackedBlockListener;
 import com.bgsoftware.wildstacker.menu.BarrelsPlaceMenu;
 import com.bgsoftware.wildstacker.objects.WStackedBarrel;
@@ -45,11 +47,14 @@ public final class BarrelsListener implements Listener {
     private final Set<UUID> barrelsToggleCommandPlayers = new HashSet<>();
     private final Set<UUID> alreadyBarrelsPlacedPlayers = new HashSet<>();
     private final WildStackerPlugin plugin;
+    private final SystemManager systemManager;
 
     public BarrelsListener(WildStackerPlugin plugin) {
         this.plugin = plugin;
-        if (ServerVersion.isAtLeast(ServerVersion.v1_9))
+        if (ServerVersion.isAtLeast(ServerVersion.v1_9)) {
             plugin.getServer().getPluginManager().registerEvents(new CauldronChangeListener(), plugin);
+        }
+        this.systemManager = plugin.getSystemManager();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -91,6 +96,12 @@ public final class BarrelsListener implements Listener {
             if (!stackedBarrel.isCached()) {
                 stackedBarrel.remove();
                 return;
+            }
+
+            for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+                if (visitor.visit(stackedBarrel, e)) {
+                    return;
+                }
             }
 
             if (e.getBlockPlaced().getY() > e.getBlockAgainst().getY() && plugin.getSystemManager().isStackedBarrel(e.getBlockAgainst())) {
@@ -191,6 +202,12 @@ public final class BarrelsListener implements Listener {
         StackedBarrel stackedBarrel = WStackedBarrel.of(e.getBlock());
         int stackSize = stackedBarrel.getStackAmount();
 
+        for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+            if (visitor.visit(stackedBarrel, e)) {
+                return;
+            }
+        }
+
         if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             ItemStack dropStack = EventsCaller.callBarrelDropEvent(stackedBarrel, e.getPlayer(), stackSize);
 
@@ -225,6 +242,12 @@ public final class BarrelsListener implements Listener {
             return;
 
         StackedBarrel stackedBarrel = WStackedBarrel.of(e.getClickedBlock());
+
+        for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+            if (visitor.visit(stackedBarrel, e)) {
+                return;
+            }
+        }
 
         if (e.getItem() != null)
             return;
@@ -267,6 +290,12 @@ public final class BarrelsListener implements Listener {
 
             StackedBarrel stackedBarrel = WStackedBarrel.of(block);
 
+            for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+                if (visitor.visit(stackedBarrel, e)) {
+                    return;
+                }
+            }
+
             int amount = plugin.getSettings().explosionsBreakBarrelStack ? stackedBarrel.getStackAmount() : 1;
             ItemStack barrelItem = EventsCaller.callBarrelDropEvent(stackedBarrel, null, amount);
 
@@ -278,8 +307,17 @@ public final class BarrelsListener implements Listener {
     @EventHandler
     public void onEntityInteract(PlayerInteractAtEntityEvent e) {
         if (e.getRightClicked() instanceof ArmorStand) {
-            if (plugin.getSystemManager().isStackedBarrel(e.getRightClicked().getLocation().getBlock().getLocation()))
+            if (plugin.getSystemManager().isStackedBarrel(e.getRightClicked().getLocation().getBlock().getLocation())) {
+                StackedBarrel stackedBarrel = WStackedBarrel.of(e.getRightClicked().getLocation().getBlock());
+
+                for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+                    if (visitor.visit(stackedBarrel, e)) {
+                        return;
+                    }
+                }
+
                 e.setCancelled(true);
+            }
         }
     }
 
@@ -313,6 +351,14 @@ public final class BarrelsListener implements Listener {
 
         for (Block block : e.getBlocks()) {
             if (plugin.getSystemManager().isStackedBarrel(block)) {
+                StackedBarrel stackedBarrel = WStackedBarrel.of(block);
+
+                for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+                    if (visitor.visit(stackedBarrel, e)) {
+                        return;
+                    }
+                }
+
                 e.setCancelled(true);
                 break;
             }
@@ -326,6 +372,14 @@ public final class BarrelsListener implements Listener {
 
         for (Block block : e.getBlocks()) {
             if (plugin.getSystemManager().isStackedBarrel(block)) {
+                StackedBarrel stackedBarrel = WStackedBarrel.of(block);
+
+                for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+                    if (visitor.visit(stackedBarrel, e)) {
+                        return;
+                    }
+                }
+
                 e.setCancelled(true);
                 break;
             }
@@ -366,11 +420,18 @@ public final class BarrelsListener implements Listener {
                 return;
 
             if (plugin.getSystemManager().isStackedBarrel(e.getBlock())) {
+                StackedBarrel stackedBarrel = WStackedBarrel.of(e.getBlock());
+
+                for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
+                    if (visitor.visit(stackedBarrel, e)) {
+                        return;
+                    }
+                }
+
                 e.setCancelled(true);
                 e.setNewLevel(0);
             }
         }
-
     }
 
 }

@@ -14,6 +14,7 @@ import com.bgsoftware.wildstacker.api.objects.StackedSnapshot;
 import com.bgsoftware.wildstacker.api.objects.StackedSpawner;
 import com.bgsoftware.wildstacker.api.objects.UnloadedStackedBarrel;
 import com.bgsoftware.wildstacker.api.objects.UnloadedStackedSpawner;
+import com.bgsoftware.wildstacker.api.objects.visitor.StackedObjectVisitor;
 import com.bgsoftware.wildstacker.api.spawning.SpawnCondition;
 import com.bgsoftware.wildstacker.database.Query;
 import com.bgsoftware.wildstacker.hooks.DataSerializer_Default;
@@ -88,6 +89,7 @@ public final class SystemHandler implements SystemManager {
     private boolean loadedData = false;
 
     private IDataSerializer dataSerializer;
+    private final List<StackedObjectVisitor> stackedObjectVisitors;
 
     public SystemHandler(WildStackerPlugin plugin) {
         this.plugin = plugin;
@@ -105,6 +107,7 @@ public final class SystemHandler implements SystemManager {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::performCacheClear, 100L, 100L);
         //Start the auto-save
         Bukkit.getScheduler().runTaskTimer(plugin, this::performCacheSave, 300L, 300L);
+        stackedObjectVisitors = new ArrayList<>();
     }
 
     /*
@@ -345,6 +348,11 @@ public final class SystemHandler implements SystemManager {
         dataHandler.CACHED_BARRELS_RAW.values().forEach(map -> barrels.addAll(map.values()));
 
         return barrels;
+    }
+
+    @Override
+    public List<StackedObjectVisitor> getStackedObjectVisitors() {
+        return stackedObjectVisitors;
     }
 
     @Override

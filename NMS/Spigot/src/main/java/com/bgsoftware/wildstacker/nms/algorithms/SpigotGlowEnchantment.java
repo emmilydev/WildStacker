@@ -1,3 +1,4 @@
+
 package com.bgsoftware.wildstacker.nms.algorithms;
 
 import org.bukkit.NamespacedKey;
