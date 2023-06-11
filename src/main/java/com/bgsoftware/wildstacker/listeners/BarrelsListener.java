@@ -100,6 +100,8 @@ public final class BarrelsListener implements Listener {
 
             for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
                 if (visitor.visit(stackedBarrel, e)) {
+                    e.setCancelled(true);
+
                     return;
                 }
             }
@@ -204,6 +206,8 @@ public final class BarrelsListener implements Listener {
 
         for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
             if (visitor.visit(stackedBarrel, e)) {
+                e.setCancelled(true);
+
                 return;
             }
         }
@@ -245,6 +249,8 @@ public final class BarrelsListener implements Listener {
 
         for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
             if (visitor.visit(stackedBarrel, e)) {
+                e.setCancelled(true);
+
                 return;
             }
         }
@@ -292,6 +298,8 @@ public final class BarrelsListener implements Listener {
 
             for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
                 if (visitor.visit(stackedBarrel, e)) {
+                    e.setCancelled(true);
+
                     return;
                 }
             }
@@ -312,6 +320,8 @@ public final class BarrelsListener implements Listener {
 
                 for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
                     if (visitor.visit(stackedBarrel, e)) {
+                        e.setCancelled(true);
+
                         return;
                     }
                 }
@@ -355,6 +365,8 @@ public final class BarrelsListener implements Listener {
 
                 for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
                     if (visitor.visit(stackedBarrel, e)) {
+                        e.setCancelled(true);
+
                         return;
                     }
                 }
@@ -376,6 +388,8 @@ public final class BarrelsListener implements Listener {
 
                 for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
                     if (visitor.visit(stackedBarrel, e)) {
+                        e.setCancelled(true);
+
                         return;
                     }
                 }
@@ -424,6 +438,8 @@ public final class BarrelsListener implements Listener {
 
                 for (StackedObjectVisitor visitor : systemManager.getStackedObjectVisitors()) {
                     if (visitor.visit(stackedBarrel, e)) {
+                        e.setCancelled(true);
+
                         return;
                     }
                 }
